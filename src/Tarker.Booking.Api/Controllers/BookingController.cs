@@ -36,15 +36,15 @@ public class BookingController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Datos obtenidos con éxito"));
     }
 
-    [HttpGet("get-by-doc-num/{docNum}")]
-    public async Task<IActionResult> GetByDocNum(string docNum, [FromServices] IGetBookingByDocNumQuery getBookingByDocNumQuery)
+    [HttpGet("get-by-doc-num")]
+    public async Task<IActionResult> GetByDocNum([FromQuery] string docNumber, [FromServices] IGetBookingByDocNumQuery getBookingByDocNumQuery)
     {
-        if (docNum == "")
+        if (string.IsNullOrEmpty(docNumber))
         {
             return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest));
         }
 
-        var data = await getBookingByDocNumQuery.Execute(docNum);
+        var data = await getBookingByDocNumQuery.Execute(docNumber);
 
         if (data == null)
         {
@@ -54,17 +54,17 @@ public class BookingController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Datos obtenidos con éxito"));
     }
 
-    [HttpGet("get-by-type/{type}")]
-    public async Task<IActionResult> GetByType(string type, [FromServices] IGetBookingByTypeQuery getBookingByTypeQuery)
+    [HttpGet("get-by-type")]
+    public async Task<IActionResult> GetByType([FromQuery] string type, [FromServices] IGetBookingByTypeQuery getBookingByTypeQuery)
     {
-        if (type == "")
+        if (string.IsNullOrEmpty(type))
         {
             return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest));
         }
 
         var data = await getBookingByTypeQuery.Execute(type);
 
-        if (data == null)
+        if (data == null || data.Count == 0)
         {
             return StatusCode(StatusCodes.Status404NotFound, ResponseApiService.Response(StatusCodes.Status404NotFound));
         }

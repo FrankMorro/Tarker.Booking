@@ -69,7 +69,7 @@ public class CustomerController : ControllerBase
     [HttpGet("get-by-doc-num/{docNum}")]
     public async Task<IActionResult> GetByDocNum(string docNum, [FromServices] IGetCustomerByDocNumQuery getCustomerByDocNumQuery)
     {
-        if (docNum == "")
+        if (string.IsNullOrEmpty(docNum))
         {
             return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest));
         }
