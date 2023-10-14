@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tarker.Booking.Application.DataBase.User.Commands.CreateUser;
+using Tarker.Booking.Application.DataBase.User.Commands.DeleteUser;
 using Tarker.Booking.Application.DataBase.User.Commands.UpdateUser;
+using Tarker.Booking.Application.DataBase.User.Commands.UpdateUserPassword;
+using Tarker.Booking.Application.DataBase.User.Queries.GetAllUser;
+using Tarker.Booking.Application.DataBase.User.Queries.GetUserById;
+using Tarker.Booking.Application.DataBase.User.Queries.GetUserByUserPassword;
 using Tarker.Booking.Application.Exceptions;
 using Tarker.Booking.Application.Features;
 
@@ -32,5 +37,79 @@ public class UserController : ControllerBase
 
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro actualizado con éxito"));
 
+    }
+
+    [HttpPut("update-password")]
+    public async Task<IActionResult> UpdatePassword(
+        [FromBody] UpdateUserPasswordModel model,
+        [FromServices] IUpdateUserPasswordCommand updateUserPasswordCommand)
+    {
+        var data = await updateUserPasswordCommand.Execute(model);
+
+        return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro actualizado con éxito"));
+
+    }
+
+    [HttpDelete("delete/{userId}")]
+    public async Task<IActionResult> Delete(int userId, [FromServices] IDeleteUserCommand deleteUserCommand)
+    {
+        if (userId == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest));
+        }
+
+        var data = await deleteUserCommand.Execute(userId);
+
+        if (!data)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, ResponseApiService.Response(StatusCodes.Status404NotFound, data));
+        }
+
+        return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro eliminado con éxito"));
+    }
+
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll([FromServices] IGetAllUserQuery getAllUserQuery)
+    {
+        var data = await getAllUserQuery.Execute();
+
+        if (data == null || data.Count == 0)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, ResponseApiService.Response(StatusCodes.Status404NotFound));
+        }
+
+        return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Datos obtenidos con éxito"));
+    }
+
+    [HttpGet("get-by-id/{userId}")]
+    public async Task<IActionResult> GetById(int userId, [FromServices] IGetUserByIdQuery getUserByIdQuery)
+    {
+        if (userId == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest));
+        }
+
+        var data = await getUserByIdQuery.Execute(userId);
+
+        if (data == null)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, ResponseApiService.Response(StatusCodes.Status404NotFound));
+        }
+
+        return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Datos obtenidos con éxito"));
+    }
+
+    [HttpGet("get-by-username-password/{userName}/{password}")]
+    public async Task<IActionResult> GetByUserNamePassword(string userName, string password,
+        [FromServices] IGetUserByUserPasswordQuery getUserByUserPasswordQuery)
+    {
+        var data = await getUserByUserPasswordQuery.Execute(userName, password);
+
+        if (data == null)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, ResponseApiService.Response(StatusCodes.Status404NotFound));
+        }
+
+        return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Datos obtenidos con éxito"));
     }
 }
