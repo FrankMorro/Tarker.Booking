@@ -2,7 +2,7 @@
 {
     public class CreateBookingModel
     {
-        public DateTime? RegisterDate { get; set; }
+        public DateTime RegisterDate { get; set; } = DateTime.Now;
         public required string Code { get; set; }
         public required string Type { get; set; }
         public int CustomerId { get; set; }

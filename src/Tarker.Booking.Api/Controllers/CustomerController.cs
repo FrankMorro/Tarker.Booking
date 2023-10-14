@@ -16,9 +16,7 @@ namespace Tarker.Booking.Api.Controllers;
 public class CustomerController : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<IActionResult> Create(
-    [FromBody] CreateCustomerModel model,
-    [FromServices] ICreateCustomerCommand createCustomerCommand1)
+    public async Task<IActionResult> Create([FromBody] CreateCustomerModel model, [FromServices] ICreateCustomerCommand createCustomerCommand1)
     {
         var data = await createCustomerCommand1.Execute(model);
 
@@ -69,7 +67,7 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet("get-by-doc-num/{docNum}")]
-    public async Task<IActionResult> GetByType(string docNum, [FromServices] IGetCustomerByDocNumQuery getCustomerByDocNumQuery)
+    public async Task<IActionResult> GetByDocNum(string docNum, [FromServices] IGetCustomerByDocNumQuery getCustomerByDocNumQuery)
     {
         if (docNum == "")
         {
@@ -87,7 +85,7 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet("get-by-id/{customerId}")]
-    public async Task<IActionResult> GetByDocNum(int customerId, [FromServices] IGetCustomerByIdQuery getCustomerByIdQuery)
+    public async Task<IActionResult> GetById(int customerId, [FromServices] IGetCustomerByIdQuery getCustomerByIdQuery)
     {
         if (customerId == 0)
         {
