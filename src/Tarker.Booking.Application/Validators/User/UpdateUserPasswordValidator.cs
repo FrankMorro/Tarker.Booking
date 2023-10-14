@@ -7,8 +7,8 @@ namespace Tarker.Booking.Application.Validators.User
     {
         public UpdateUserPasswordValidator()
         {
-            RuleFor(x => x.UserId).NotNull().WithMessage("El campo no puede ser nulo").NotEmpty().GreaterThan(0);
-            RuleFor(x => x.Password).NotNull().WithMessage("El campo no puede ser nulo").MaximumLength(50).NotEmpty();
+            RuleFor(x => x.UserId).NotNull().NotEmpty().GreaterThan(0);
+            RuleFor(x => x.Password).NotNull().MaximumLength(50).NotEmpty();
         }
     }
 }

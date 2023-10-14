@@ -7,10 +7,10 @@ namespace Tarker.Booking.Application.Validators.User
     {
         public CreateUserValidator()
         {
-            RuleFor(x => x.FirstName).NotNull().WithMessage("El campo no puede ser nulo").MaximumLength(50).NotEmpty();
-            RuleFor(x => x.LastName).NotNull().WithMessage("El campo no puede ser nulo").MaximumLength(50).NotEmpty();
-            RuleFor(x => x.UserName).NotNull().WithMessage("El campo no puede ser nulo").MaximumLength(50).NotEmpty();
-            RuleFor(x => x.Password).NotNull().WithMessage("El campo no puede ser nulo").MaximumLength(50).NotEmpty();
+            RuleFor(x => x.FirstName).NotNull().MaximumLength(50).NotEmpty();
+            RuleFor(x => x.LastName).NotNull().MaximumLength(50).NotEmpty();
+            RuleFor(x => x.UserName).NotNull().MaximumLength(50).NotEmpty();
+            RuleFor(x => x.Password).NotNull().MaximumLength(50).NotEmpty();
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Tarker.Booking.Application.DataBase.Customer.Commands.CreateCustomer;
 using Tarker.Booking.Application.DataBase.Customer.Commands.DeleteCustomer;
 using Tarker.Booking.Application.DataBase.Customer.Commands.UpdateCustomer;
@@ -16,9 +17,19 @@ namespace Tarker.Booking.Api.Controllers;
 public class CustomerController : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] CreateCustomerModel model, [FromServices] ICreateCustomerCommand createCustomerCommand1)
+    public async Task<IActionResult> Create(
+        [FromBody] CreateCustomerModel model,
+        [FromServices] ICreateCustomerCommand createCustomerCommand,
+        [FromServices] IValidator<CreateCustomerModel> validator)
     {
-        var data = await createCustomerCommand1.Execute(model);
+        var validate = await validator.ValidateAsync(model);
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
+        var data = await createCustomerCommand.Execute(model);
 
         return StatusCode(StatusCodes.Status201Created, ResponseApiService.Response(StatusCodes.Status201Created, data, "Registro creado con éxito"));
 
@@ -27,9 +38,17 @@ public class CustomerController : ControllerBase
     [HttpPut("update")]
     public async Task<IActionResult> Update(
     [FromBody] UpdateCustomerModel model,
-    [FromServices] IUpdateCustomerCommand updateCustomerCommand1)
+    [FromServices] IUpdateCustomerCommand updateCustomerCommand,
+    [FromServices] IValidator<UpdateCustomerModel> validator)
     {
-        var data = await updateCustomerCommand1.Execute(model);
+        var validate = await validator.ValidateAsync(model);
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
+        var data = await updateCustomerCommand.Execute(model);
 
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro actualizado con éxito"));
 

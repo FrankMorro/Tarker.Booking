@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Tarker.Booking.Application.DataBase.User.Commands.CreateUser;
 using Tarker.Booking.Application.DataBase.User.Commands.DeleteUser;
 using Tarker.Booking.Application.DataBase.User.Commands.UpdateUser;
@@ -20,8 +21,16 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> Create(
         [FromBody] CreateUserModel model,
-        [FromServices] ICreateUserCommand createUserCommand)
+        [FromServices] ICreateUserCommand createUserCommand,
+        [FromServices] IValidator<CreateUserModel> validator)
     {
+        var validate = await validator.ValidateAsync(model);
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
         var data = await createUserCommand.Execute(model);
 
         return StatusCode(StatusCodes.Status201Created, ResponseApiService.Response(StatusCodes.Status201Created, data, "Registro creado con éxito"));
@@ -31,8 +40,16 @@ public class UserController : ControllerBase
     [HttpPut("update")]
     public async Task<IActionResult> Update(
         [FromBody] UpdateUserModel model,
-        [FromServices] IUpdateUserCommand updateUserCommand)
+        [FromServices] IUpdateUserCommand updateUserCommand,
+        [FromServices] IValidator<UpdateUserModel> validator)
     {
+        var validate = await validator.ValidateAsync(model);
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
         var data = await updateUserCommand.Execute(model);
 
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro actualizado con éxito"));
@@ -42,8 +59,16 @@ public class UserController : ControllerBase
     [HttpPut("update-password")]
     public async Task<IActionResult> UpdatePassword(
         [FromBody] UpdateUserPasswordModel model,
-        [FromServices] IUpdateUserPasswordCommand updateUserPasswordCommand)
+        [FromServices] IUpdateUserPasswordCommand updateUserPasswordCommand,
+        [FromServices] IValidator<UpdateUserPasswordModel> validator)
     {
+        var validate = await validator.ValidateAsync(model);
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
         var data = await updateUserPasswordCommand.Execute(model);
 
         return StatusCode(StatusCodes.Status200OK, ResponseApiService.Response(StatusCodes.Status200OK, data, "Registro actualizado con éxito"));
@@ -101,8 +126,16 @@ public class UserController : ControllerBase
 
     [HttpGet("get-by-username-password/{userName}/{password}")]
     public async Task<IActionResult> GetByUserNamePassword(string userName, string password,
-        [FromServices] IGetUserByUserPasswordQuery getUserByUserPasswordQuery)
+        [FromServices] IGetUserByUserPasswordQuery getUserByUserPasswordQuery,
+        [FromServices] IValidator<(string, string)> validator)
     {
+        var validate = await validator.ValidateAsync((userName, password));
+
+        if (!validate.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors));
+        }
+
         var data = await getUserByUserPasswordQuery.Execute(userName, password);
 
         if (data == null)
